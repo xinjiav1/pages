@@ -6,7 +6,6 @@ tailwind: True
 infoGraph: capstone_infograph
 title: Capstone Projects
 description: Design-Based Research (DBR) capstone projects solving real-world problems through iterative design, implementation, and analysis. Each project features ML, database work, and advanced data structures (e.g., graphs). Projects must be deployed and accessible through this infographic.
-courses: {'csse': {'week': 25}}
 type: capstone
 categories: Capstone
 permalink: /capstone/
@@ -26,21 +25,23 @@ sticky_rank: 1
 <h2>Design-Based Research (DBR) Capstone Projects</h2>
 
 <style>
-#capstone-grid > div {
-  min-height: 10rem;
-  transition: box-shadow 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+.capstone-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
 }
-#capstone-grid > div a img {
+
+.capstone-card-image {
+  width: 7rem;
   height: 7rem;
-  width: auto;
   max-width: 7rem;
   object-fit: contain;
   display: block;
+  flex: 0 0 7rem;
 }
-#capstone-grid > div:hover {
-  border-color: rgba(59,130,246,0.45);
-  box-shadow: 0 0 0 2px rgba(59,130,246,0.22), 0 6px 18px rgba(0,0,0,0.2);
-  transform: translateY(-2px);
+
+.capstone-item > a {
+  flex: 0 0 7rem;
 }
 
 /* Tech stack tooltip */
@@ -62,7 +63,7 @@ sticky_rank: 1
   min-width: 160px;
   max-width: 280px;
 }
-#capstone-grid > div:hover .capstone-tech-tooltip {
+.capstone-item:hover .capstone-tech-tooltip {
   opacity: 1;
 }
 .capstone-tech-tt-tag {
@@ -76,27 +77,28 @@ sticky_rank: 1
 }
 </style>
 
-<div class="mb-4 grid gap-4 md:grid-cols-[minmax(max-content,1fr)_minmax(0,420px)] md:items-center">
- <div class="flex flex-wrap gap-2">
-   <button id="show-all" class="px-3 py-1 bg-gray-200 rounded mr-2">All</button>
-   <button id="show-csa" class="px-3 py-1 bg-blue-200 rounded mr-2">CSA</button>
-   <button id="show-csp" class="px-3 py-1 bg-blue-200 rounded mr-2">CSP</button>
-  <button id="show-csh" class="px-3 py-1 bg-blue-200 rounded mr-2">CSH</button>
-   <a href="{% post_url 2026-06-01-README-capstone %}" class="inline-flex items-center px-3 py-1 bg-white border border-gray-300 rounded text-sm text-slate-900 hover:bg-gray-100" title="Open Capstone Home Documentation">
-     <span class="mr-2">📄</span>README
-   </a>
-   <a href="/capstone/games/" class="inline-flex items-center px-3 py-1 bg-indigo-600 border border-indigo-500 rounded text-sm text-white hover:bg-indigo-500 font-semibold" title="Browse all OCS Games">
-     <span class="mr-2">🎮</span>Games Directory
-   </a>
-   <select id="year-select" class="ml-4 px-2 py-1 rounded border border-gray-300 bg-white text-sm">
-     <option value="2026-2027" selected>2026/2027</option>
-     <option value="2025-2026">2025/2026</option>
-   </select>
- </div>
- <div class="flex flex-col items-start sm:items-end">
-   <input id="project-search" type="search" placeholder="Search projects, descriptions, or team members" class="w-full min-w-[240px] rounded-lg border border-gray-300 bg-white/90 px-4 py-2 text-sm text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300" />
-   <p id="search-status" class="mt-2 text-xs text-gray-500">Showing all projects.</p>
- </div>
+<div class="ocs__grid" style="margin-bottom: 0.9rem;">
+  <div class="ocs__grid-cell">
+    <div class="ocs__links ocs__links--wide">
+      <button id="show-all" type="button" class="ocs__btn capstone-filter-btn alert-green fill" aria-pressed="true">All</button>
+      <button id="show-csa" type="button" class="ocs__btn capstone-filter-btn" aria-pressed="false">CSA</button>
+      <button id="show-csp" type="button" class="ocs__btn capstone-filter-btn" aria-pressed="false">CSP</button>
+      <button id="show-csh" type="button" class="ocs__btn capstone-filter-btn" aria-pressed="false">CSH</button>
+      <select id="year-select" class="nc-select" aria-label="Filter projects by school year" style="max-width: 14rem;">
+        <option value="2026-2027" selected>2026/2027</option>
+        <option value="2025-2026">2025/2026</option>
+      </select>
+      <a href="{% post_url 2026-06-01-README-capstone %}" class="ocs__btn" title="Open Capstone Home Documentation">📄 README</a>
+      <a href="/capstone/games/" class="ocs__btn alert-green fill" title="Browse all OCS Games">🎮 Games Directory</a>
+    </div>
+  </div>
+</div>
+
+<div class="ocs__grid">
+  <div class="ocs__grid-cell">
+    <input id="project-search" type="search" placeholder="Search projects, descriptions, or team members" class="nc-input" />
+    <p id="search-status" class="text-xs text-gray-500" style="margin: 0.25rem 0 0;">Showing all projects.</p>
+  </div>
 </div>
 
 
@@ -117,6 +119,12 @@ document.addEventListener('DOMContentLoaded', function(){
   const cards = Array.from(document.querySelectorAll('#capstone-grid > div'));
   const searchInput = document.getElementById('project-search');
   const status = document.getElementById('search-status');
+  const typeButtons = {
+    all: document.getElementById('show-all'),
+    CSA: document.getElementById('show-csa'),
+    CSP: document.getElementById('show-csp'),
+    CSH: document.getElementById('show-csh')
+  };
   let currentType = 'all';
   let currentQuery = '';
   const yearSelect = document.getElementById('year-select');
@@ -206,8 +214,18 @@ document.addEventListener('DOMContentLoaded', function(){
     });
     updateStatus(count);
   }
+  function updateTypeButtons(){
+    Object.entries(typeButtons).forEach(([type, button])=>{
+      if(!button) return;
+      const active = type === currentType;
+      button.classList.toggle('alert-green', active);
+      button.classList.toggle('fill', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+  }
   function setTypeFilter(type){
     currentType = type;
+    updateTypeButtons();
     applyFilters();
   }
   document.getElementById('show-all')?.addEventListener('click', ()=> setTypeFilter('all'));
@@ -256,7 +274,8 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   cards.forEach(card=>{
-    card.classList.add('relative');
+    card.classList.add('ocs__grid-cell', 'relative');
+    card.querySelector('a > img')?.classList.add('capstone-card-image');
     const titleAnchor = card.querySelector('h3 a');
     if(titleAnchor){
       const cardTitle = titleAnchor.textContent.trim();
@@ -312,17 +331,16 @@ document.addEventListener('DOMContentLoaded', function(){
     currentQuery = normalize(event.target.value);
     applyFilters();
   });
+  updateTypeButtons();
   applyFilters();
 });
 </script>
 
-Below are the capstone infographic pages created by student groups. Click an image or title to open the full infographic and project page.
-
-<div id="capstone-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 my-6">
+<div id="capstone-grid" class="ocs__grid ocs__grid--standard cols-2 my-6">
 
 
    <!-- SFI Foundation 2026–27 (CSP) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP"
+   <div class="ocs__grid-cell  capstone-item CSP"
         data-year="2026-2027"
         data-page-url="{{ '/capstone/sfi-foundation/' | relative_url }}"
         data-frontend-url="https://github.com/ruhaanb622/SFI-Frontend"
@@ -338,7 +356,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
   
    <!-- Submissions Capstone (umbrella issue: AAA, Submission Analytics, AI Grading) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA" data-year="2026-2027">
+   <div class="ocs__grid-cell  capstone-item CSA" data-year="2026-2027">
        <a href="{% post_url capstone/2026-08-31-submissions-capstone %}">
            <div class="w-28 h-28 flex items-center justify-center bg-blue-900 text-white text-2xl font-bold rounded" style="background: linear-gradient(135deg, #06b6d4, #0f172a);">SUB</div>
        </a>
@@ -351,7 +369,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
    <!-- UESL Accessible Game Maker 2.0 (CSP, 2026/2027) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP" data-year="2026-2027" data-page-url="{{ '/capstone/uesl-game-maker/' | relative_url }}" data-frontend-url="https://github.com/RazorCrest00/uesl-accessible-game-maker">
+   <div class="ocs__grid-cell  capstone-item CSP" data-year="2026-2027" data-page-url="{{ '/capstone/uesl-game-maker/' | relative_url }}" data-frontend-url="https://github.com/RazorCrest00/uesl-accessible-game-maker">
        <a href="{{ '/capstone/uesl-game-maker/' | relative_url }}">
            <img src="{{ '/images/capstone/uesl_foundation.svg' | relative_url }}" alt="UESL Foundation logo — shield with game controller" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -364,7 +382,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
    <!-- RFID + Camera-Correlated Classroom Presence -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSH" data-year="2026-2027">
+   <div class="ocs__grid-cell  capstone-item CSH" data-year="2026-2027">
      <a href="{% post_url capstone/2026-08-28-rfid-presence-capstone %}">
        <div class="w-28 h-28 flex items-center justify-center bg-blue-900 text-white text-2xl font-bold rounded" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">RFID</div>
      </a>
@@ -377,7 +395,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
      <!-- Jarvis Classroom Object Detection -->
-     <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSH" data-year="{{ site.data.jarvis_infograph.Year }}" data-frontend-url="{{ site.data.jarvis_infograph.Repo }}">
+     <div class="ocs__grid-cell  capstone-item CSH" data-year="{{ site.data.jarvis_infograph.Year }}" data-frontend-url="{{ site.data.jarvis_infograph.Repo }}">
        <a href="{% post_url capstone/2026-09-01-jarvis-capstone %}">
          <img src="{{ '/images/' | append: site.data.jarvis_infograph.Image | relative_url }}" alt="{{ site.data.jarvis_infograph.Title }}" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -390,7 +408,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
    <!-- Big Six & Code Hub -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA">
+   <div class="ocs__grid-cell  capstone-item CSA">
        <a href="{% post_url capstone/2026-03-04-big6-capstone %}">
            <img src="/images/capstone/backend.png" alt="Big Six & Code Hub — Interactive CS Learning Modules" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -403,7 +421,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
    <!-- Assignment Resources Platform -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA">
+   <div class="ocs__grid-cell  capstone-item CSA">
        <a href="{% post_url capstone/2026-02-06-slack-messaging-capstone %}">
          <img src="/images/capstone/database_defenders.png" alt="Assignment Resources Platform - Assignment-scoped File & URL Resources" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -416,7 +434,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
    <!-- Educators Capstone -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA">
+   <div class="ocs__grid-cell  capstone-item CSA">
        <a href="{% post_url capstone/2026-02-06-educators-capstone %}">
            <img src="/images/capstone/educators_icon.png" alt="Educators - Temporal Wayfinding for CS Learning" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -429,7 +447,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
      <!-- OCS Intelligence LLM -->
-     <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSH" data-year="2026-2027">
+     <div class="ocs__grid-cell  capstone-item CSH" data-year="2026-2027">
        <a href="{% post_url capstone/2026-08-31-ocs-intelligence-capstone %}">
          <img src="/images/capstone/ocs-intelligence.png" alt="OCS Intelligence LLM - Shared AI Infrastructure for Students" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -442,7 +460,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
    <!-- Toolchain Trail -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA" data-year="2026-2027">
+   <div class="ocs__grid-cell  capstone-item CSA" data-year="2026-2027">
        <a href="{% post_url capstone/2026-08-28-toolchain-trail %}">
          <img src="{{ '/images/' | append: site.data.toolchain-trail-capstone.Logo | relative_url }}" alt="{{ site.data.toolchain-trail-capstone.Title }} logo" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -454,7 +472,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
    <!-- Hunger Heroes -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA">
+   <div class="ocs__grid-cell  capstone-item CSA">
        <a href="{% post_url capstone/2026-02-06-hunger-heroes-capstone %}">
            <img src="/images/capstone/hunger_heroes.svg" alt="Hunger Heroes - Food Redistribution Platform" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -467,7 +485,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
    <!-- Quant Game -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA">
+   <div class="ocs__grid-cell  capstone-item CSA">
        <a href="{% post_url capstone/2026-02-06-quant-game-capstone %}">
            <img src="/images/capstone/quant-trading-game.png" alt="Quantitative Trading Bot capstone infographic preview image" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -480,7 +498,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
    <!-- Bud-E -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA">
+   <div class="ocs__grid-cell  capstone-item CSA">
        <a href="{% post_url capstone/2026-02-08-bud-e-capstone %}">
            <img src="/images/capstone/bud_e.png" alt="Bud-E - Productivity Gamification Through Virtual Pet" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -493,7 +511,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
    <!-- Granolaa -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA">
+   <div class="ocs__grid-cell  capstone-item CSA">
        <a href="{% post_url capstone/2026-02-08-granolaa-capstone %}">
            <img src="/images/capstone/granolaa.png" alt="Granolaa - Local-First Screen and Webcam Monitoring" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -506,7 +524,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
    <!-- Wayfinding Pages -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA">
+   <div class="ocs__grid-cell  capstone-item CSA">
        <a href="{% post_url capstone/2026-02-08-wayfinding-pages-capstone %}">
            <img src="/images/capstone/wayfinding_logo.png" alt="Wayfinding Pages - Sorting Groups Based on your Persona" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -518,7 +536,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
 
    <!-- Greppers -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
        <a href="{% post_url 2026-03-04-greppers-capstone %}">
            <div class="w-28 h-28 flex items-center justify-center bg-blue-900 text-white text-3xl font-bold rounded">SFI</div>
        </a>
@@ -531,7 +549,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
   <!-- Oasis Capstone -->
-  <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA">
+  <div class="ocs__grid-cell  capstone-item CSA">
       <a href="{% post_url 2026-03-04-oasis-community-capstone %}">
           <img src="/images/capstone/oasis-logo.png" alt="Oasis Capstone" class="w-28 h-28 object-cover rounded" />
       </a>
@@ -544,7 +562,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
   <!-- Kora Capstone -->
-  <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA">
+  <div class="ocs__grid-cell  capstone-item CSA">
       <a href="{% post_url 2026-02-06-kora-capstone %}">
           <img src="/images/capstone/kora.png" alt="Kora Capstone" class="w-28 h-28 object-cover rounded" />
       </a>
@@ -557,7 +575,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
    <!-- Pirna Pages -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA">
+   <div class="ocs__grid-cell  capstone-item CSA">
        <a href="{% post_url 2026-02-13-pirna-capstone %}">
            <img src="/images/capstone/pirna_logo.png" alt="AutoTriage - Triage project" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -569,7 +587,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
 
    <!-- AP CSA Exam Simulator -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA">
+   <div class="ocs__grid-cell  capstone-item CSA">
        <a href="{% post_url capstone/2026-05-19-exam-simulator-capstone %}">
            <div class="w-28 h-28 flex items-center justify-center bg-blue-900 text-white text-2xl font-bold rounded" style="background: linear-gradient(135deg, #4CAFEF, #667eea);">FRQ</div>
        </a>
@@ -581,7 +599,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
 
    <!-- Poway Symphonic Orchestra Capstone -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
        <a href="{{ '/capstone/powayorchestra/' | relative_url }}">
            <div class="w-28 h-28 overflow-hidden rounded bg-white">
                <img src="{{ '/images/pso_logo.png' | relative_url }}" alt="Poway Symphony Orchestra logo" class="w-full h-full object-cover scale-125" />
@@ -595,7 +613,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
 
    <!-- Poway NEC -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
        <a href="{% post_url 2026-03-06-powaynec-capstone %}">
            <img src="/images/capstone/powaynec-logo-white.png" alt="Poway NEC logo" class="w-56 h-32 object-contain rounded bg-emerald-950 p-2" />
        </a>
@@ -607,7 +625,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
 
    <!-- HawkHub -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA">
+   <div class="ocs__grid-cell  capstone-item CSA">
        <a href="{% post_url 2026-02-06-hawkhub %}">
            <img src="/images/capstone/hawkhub.png" alt="HawkHub" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -619,7 +637,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
    
    <!-- Doing Exceptional Deeds -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
        <a href="{% post_url 2026-03-09-doing-exceptional-deeds %}">
            <img src="/images/capstone/doing_exceptional_deeds.png" alt="Doing Exceptional Deeds - D.A.D. Non-profit Extension" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -631,7 +649,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
                                     
    <!-- ACS Cancer Infograph (CSP) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
        <a href="{% post_url 2026-03-05-acs-cancer-infograph %}">
            <img src="/images/capstone/acs_logo.png" alt="ACS Cancer Infograph — Interactive Body Map for Cancer Information" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -644,7 +662,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 
    <!-- Poway Woman's Club Capstone (CSP) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
        <a href="{% post_url 2026-03-09-poway-womans-club %}">
            <img src="/images/capstone/pwc_logo.png" alt="Poway Woman's Club — Website Refurbishment" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -656,7 +674,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
 
    <!-- UESL Foundation Capstone (CSP) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
        <a href="{% post_url 2026-03-05-uesl-capstone %}">
            <img src="/images/capstone/uesl_foundation.svg" alt="Unified Esports League Foundation logo — shield with game controller" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -668,7 +686,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
 
    <!-- DeFlock SD Capstone (CSP) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
        <a href="{% post_url 2026-03-06-deflock-sd %}">
            <img src="/images/capstone/deflock-sd.png" alt="DeFlock SD - Fighting Mass Surveillance" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -680,7 +698,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
 
    <!-- Soroptimist International of Poway (CSP) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
        <a href="{% post_url 2026-03-08-sip-infograph %}">
            <img src="/images/sip/sip_logo.png" alt="Soroptimist International of Poway - Site Analysis" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -692,7 +710,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
 
    <!-- Sentri (CSP) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
        <a href="{% post_url 2026-03-04-sentri-capstone %}">
            <img src="/images/capstone/sentri.png" alt="Sentri" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -704,7 +722,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
     </div>
 
    <!-- Integra (CSP 26-27) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP" data-year="2026-2027">
+   <div class="ocs__grid-cell  capstone-item CSP" data-year="2026-2027">
        <a href="{% post_url 2026-03-04-sentri-capstone %}">
            <img src="/images/capstone/sentri.png" alt="Sentri" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -716,7 +734,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
    
    <!-- Friends of the Poway Library  (CSP) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
        <a href="{% post_url 2026-03-09-poway-library %}">
            <img src="/images/capstone/poway_library.png" alt="Friends of the Poway Library" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -728,7 +746,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
 
    <!-- DSA Website Redesign (CSP) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
        <a href="{% post_url 2026-03-09-dsa-website-redesign-blog %}">
            <img src="/images/capstone/dsa_redesign.svg" alt="DSA Website Redesign — Deputy Sheriffs' Association of San Diego County" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -740,7 +758,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
 
    <!-- D.A.D. Website Redesign (CSP) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
        <a href="{% post_url 2026-03-09-dad-website-redesign-blog %}">
            <img src="/images/capstone/dad_redesign.svg" alt="D.A.D. Website Redesign — Doing Exceptional Deeds Nonprofit" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -752,7 +770,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
 
    <!-- RCR: Poway-Midland Railroad Project -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
        <a href="{% post_url 2026-03-06-rcr-poway-midland-capstone %}">
            <img src="https://static.vecteezy.com/system/resources/previews/034/949/404/non_2x/simple-steam-train-icon-illustration-design-steam-locomotive-symbol-template-vector.jpg" alt="RCR Poway-Midland Railroad Digital Experience" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -764,7 +782,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
 
     <!-- Poway Veteran's Organization-->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
     <a href="{% post_url 2026-03-06-pvo-redesign-infographic %}">
         <img src="/images/capstone/poway-veterans-logo.png" alt="Poway Veterans Organization" class="w-28 h-28 object-cover rounded" />
     </a>
@@ -776,7 +794,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
 
 </div>
   <!-- SD Auto (CSP) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
        <a href="{% post_url 2026-04-15-sd-auto-capstone %}">
            <div class="w-28 h-28 flex items-center justify-center bg-blue-600 text-white text-2xl font-bold rounded" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">SD Auto</div>
        </a>
@@ -788,7 +806,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
 
   <!-- FOPS (2025-2026) -->
- <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP" data-year="2025-2026">
+ <div class="ocs__grid-cell  capstone-item CSP" data-year="2025-2026">
         <a href="{% post_url 2026-03-09-friends-of-poway-seniors-capstone %}">
             <img src="/images/capstone/fops.png" alt="Friends of Poway Seniors" class="w-28 h-28 object-cover rounded" />
         </a>
@@ -800,7 +818,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
     </div>
 
   <!-- FOPS (2026-2027) -->
- <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP" data-year="2026-2027">
+ <div class="ocs__grid-cell  capstone-item CSP" data-year="2026-2027">
         <a href="{% post_url 2026-03-09-friends-of-poway-seniors-capstone %}">
             <img src="/images/capstone/fops.png" alt="Friends of Poway Seniors" class="w-28 h-28 object-cover rounded" />
         </a>
@@ -812,7 +830,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
     </div>
 
  <!-- Dynamic Event Calendar (CSP) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP">
+   <div class="ocs__grid-cell  capstone-item CSP">
        <a href="{% post_url 2026-03-08-Flask-and-Furious-capstone %}">
            <img src="/images/capstone/sph.png" alt="Safe Passage Heals" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -824,7 +842,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
    
    <!-- California Center For The Performing Arts Escondido (CSP, 2026/2027) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP" data-year="2026-2027">
+   <div class="ocs__grid-cell  capstone-item CSP" data-year="2026-2027">
        <a href="{% post_url 2026-09-08-ccae-escondido-capstone %}">
            <img src="/images/capstone/ccae.jpeg" alt="Cal Center For Arts Escondido Logo" class="w-28 h-28 object-contain rounded" />
        </a>
@@ -835,8 +853,44 @@ Below are the capstone infographic pages created by student groups. Click an ima
        </div>
    </div>
 
+   <!-- San Diego Senior Games (CSP, 2026/2027) -->
+   <div class="ocs__grid-cell  capstone-item CSP" data-year="2026-2027">
+       <a href="{% post_url 2026-09-10-sdseniorgames-capstone %}">
+           <img src="/images/capstone/sdseniorgames.png" alt="San Diego Senior Games Logo" class="w-28 h-28 object-contain rounded" />
+       </a>
+       <div>
+           <h3 class="text-lg font-semibold"><a href="{% post_url 2026-09-10-sdseniorgames-capstone %}">San Diego Senior Games</a></h3>
+           <p class="text-sm text-gray-700">This capstone project reorganizes the San Diego Senior Games website around the person actually trying to register. It gives every one of the seventeen sports its own page with dates, brackets, and fees in one place, smooths the handoff to the outside registration platform, and rebuilds the type, contrast, and tap targets for an audience of athletes aged 50 and over.</p>
+           <p class="text-xs text-gray-500 mt-2">Team: Aryan M, Pranay K, Raymond L</p>
+       </div>
+   </div>
+
+   <!-- Advancing STEM (CSP, 2026/2027) -->
+   <div class="ocs__grid-cell  capstone-item CSP" data-year="2026-2027">
+       <a href="{% post_url 2026-09-10-advancingstem-capstone %}">
+           <img src="/images/capstone/advancingstem.png" alt="Advancing STEM Logo" class="w-28 h-28 object-contain rounded" />
+       </a>
+       <div>
+           <h3 class="text-lg font-semibold"><a href="{% post_url 2026-09-10-advancingstem-capstone %}">Advancing STEM</a></h3>
+           <p class="text-sm text-gray-700">This capstone project rebuilds the Advancing Science, Technology and Art website so it shows what the nonprofit actually does. It moves the proof to the front, gives competitions, mentoring, camps, and outreach their own pages, makes the nine countries they work in visible, and turns a wall of sponsor logos into a page that makes the case for the next sponsor.</p>
+           <p class="text-xs text-gray-500 mt-2">Team: Aryan M, Pranay K, Raymond L</p>
+       </div>
+   </div>
+
+   <!-- San Diego Lab Rats (CSP, 2026/2027) -->
+   <div class="ocs__grid-cell  capstone-item CSP" data-year="2026-2027">
+       <a href="{% post_url 2026-09-10-sdlabrats-capstone %}">
+           <img src="/images/capstone/sdlabrats.png" alt="San Diego Lab Rats Logo" class="w-28 h-28 object-contain rounded" />
+       </a>
+       <div>
+           <h3 class="text-lg font-semibold"><a href="{% post_url 2026-09-10-sdlabrats-capstone %}">San Diego Lab Rats</a></h3>
+           <p class="text-sm text-gray-700">This capstone project restructures the San Diego Lab Rats website around the parent deciding whether to enroll. It removes the content that currently repeats across three separate blocks, gives each program its own comparable page, and pulls charter school funding and scholarships out of hiding so the families who need them can actually find them.</p>
+           <p class="text-xs text-gray-500 mt-2">Team: Aryan M, Pranay K, Raymond L</p>
+       </div>
+   </div>
+
    <!-- OCS Assignment Tracker (CSA) -->
-  <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA" data-year="2026-2027">
+  <div class="ocs__grid-cell  capstone-item CSA" data-year="2026-2027">
        <a href="{% post_url capstone/2026-09-03-chuds-capstone %}">
            <img src="/images/backendboyzgcpiccc.png" alt="Backend Boyz - OCS Assignment Tracker" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -848,7 +902,7 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
 
    <!-- OCS Security (CSA) -->
-  <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA" data-year="2026-2027">
+  <div class="ocs__grid-cell  capstone-item CSA" data-year="2026-2027">
        <a href="{% post_url capstone/2026-09-03-cccs-security %}">
            <img src="/images/capstone/cccs-security-logo.png" alt="CCCS Security" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -860,19 +914,19 @@ Below are the capstone infographic pages created by student groups. Click an ima
    </div>
 
    <!-- My Good Brain (CSP 26-27) -->
-   <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSP" data-year="2026-2027">
-       <a href="{{ '/capstone/mygoodbrain/' | relative_url }}">
+   <div class="ocs__grid-cell  capstone-item CSP" data-year="2026-2027">
+       <a href="{% post_url 2026-09-09-goodbrain %}">
            <img src="{{ '/images/capstone/my_good_brain.png' | relative_url }}" alt="My Good Brain logo" class="w-28 h-28 object-cover rounded" />
        </a>
        <div>
-           <h3 class="text-lg font-semibold"><a href="{{ '/capstone/mygoodbrain/' | relative_url }}">My Good Brain</a></h3>
+           <h3 class="text-lg font-semibold"><a href="{% post_url 2026-09-09-goodbrain %}">My Good Brain</a></h3>
            <p class="text-sm text-gray-700">An interactive hub bridging psychology, neuroscience, and art to support youth mental and emotional wellness </p>
            <p class="text-xs text-gray-500 mt-2">Team: Rashi Gaurav, Aashni Katari, Kelervia Fang</p>
        </div>
    </div>
 
    <!-- Communication System (CSA) -->
-  <div class="flex items-start space-x-4 p-4 border rounded-lg capstone-item CSA" data-year="2026-2027">
+  <div class="ocs__grid-cell  capstone-item CSA" data-year="2026-2027">
        <a href="{% post_url capstone/2026-08-27-communication-system-capstone %}">
            <img src="/images/csa-chat/announcement-chat.png" alt="Communication System - class announcement chat on the CSA course page" class="w-28 h-28 object-cover rounded" />
        </a>
@@ -1095,12 +1149,12 @@ Below are the capstone infographic pages created by student groups. Click an ima
     var grid=document.getElementById('capstone-grid'); if(!grid)return;
     var href='/capstone/view/?id='+encodeURIComponent(p.id);
     var imgHtml=p.imageUrl
-      ? '<img src="'+p.imageUrl+'" alt="'+esc(p.title)+'" class="w-28 h-28 object-cover rounded">'
+      ? '<img src="'+p.imageUrl+'" alt="'+esc(p.title)+'" class="capstone-card-image rounded">'
       : '<div class="w-28 h-28 flex items-center justify-center bg-blue-900 text-white text-2xl font-bold rounded">'+esc((p.title||'?').slice(0,3).toUpperCase())+'</div>';
     var team=Array.isArray(p.teamMembers)?p.teamMembers.join(', '):String(p.teamMembers||'');
     var course=(p.courseCode||'CSA').toUpperCase();
     var div=document.createElement('div');
-    div.className='flex items-start space-x-4 p-4 border rounded-lg capstone-item relative '+course;
+    div.className='ocs__grid-cell  capstone-item relative '+course;
     div.innerHTML='<a href="'+esc(href)+'">'+imgHtml+'</a><div><h3 class="text-lg font-semibold"><a href="'+esc(href)+'">'+esc(p.title)+'</a></h3><p class="text-sm text-gray-700">'+esc(p.description||'')+'</p><p class="text-xs text-gray-500 mt-2">Team: '+esc(team)+'</p></div>';
     grid.prepend(div);
     div.scrollIntoView({behavior:'smooth',block:'nearest'});
