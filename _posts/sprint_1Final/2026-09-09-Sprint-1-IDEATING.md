@@ -1,11 +1,13 @@
 ---
-title: ideating sprint 1
+title: ideating/documentation
 layout: post
 description: ideas for everyhting sprint 1 related
 permalink: /spt1
 author: Jade
 showReadingTime: true
 ---
+
+
 
 By the end of this assignment, you will:
 
@@ -59,4 +61,33 @@ https://dev.to/gianfcop98/10-lombok-annotations-every-java-developer-should-know
 review review review
 
 https://medium.com/javarevisited/all-the-16-lombok-annotations-explained-in-a-4-minute-article-926f71934ec6
+
+
+this is my pojo
+```java
+import jakarta.persistence.*
+import lombok.*
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+
+public class POJO {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private String email;
+    private String school;
+    private String studentID;
+    private String githubUsername;
+    private LocalDateTime createdAt;
+    private String accountType;
+
+}
+```
+
+
 
