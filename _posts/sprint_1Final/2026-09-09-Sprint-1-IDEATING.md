@@ -41,17 +41,17 @@ Design your POJO based on your data object
     Consider relationships (e.g., a Project belongs to a Team)
 
 
-required fields:
-id
-name
-createdAt
-email
+required fields:<br/>
+id<br/>
+name<br/>
+createdAt<br/>
+email<br/>
 
-data types:
-localdatetime
-strings
+data types:<br/>
+localdatetime<br/>
+strings<br/>
 
-relationships:
+relationships:<br/>
 my project should tie into the admin panel and be a useful tool for administrators when dealing with account problems/reset passwords and similar.
 
 Lombok Annotations:
@@ -69,7 +69,8 @@ import jakarta.persistence.*
 import lombok.*
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 
@@ -89,5 +90,42 @@ public class POJO {
 }
 ```
 
+Lombok generates the repeitive code, and the annotations automatically generate the missing code when compiling.
 
+The `@Entity` annotation is part of the JPA library, it bridges the gap between java code and the database 
+
+The `@Id` annotation is part of the JPA library, it specifies the primary key of an entity -- this allows for multipule users of the same name
+
+The `@GeneratedValue` annnotation is used with the `@Id` annotation, and is used to generate primary values for an entity
+
+The `@Getter` and `@Setter` annotations are used to generate the default getter/setter, without needing to write them down
+
+A getter allows another part of the program to retrieve a private instance variable.
+For example in the following code:
+
+```java
+public String getName() {
+    return name;
+}
+```
+
+I can then write:
+
+```java
+Admin user = new Admin();
+
+user.setName("Alexander Hamilton");
+
+System.out.println(user.getName());
+```
+
+The output will be:
+```
+Alexander Hamilton
+```
+
+A setter modifies an object's instance variable.
+
+
+The `@NoArgsConstructor` creates a constructor with no paramaters, however if not possible then compiler error. On the other hand, `@AllArgsConstructor` ccreates a constructor with one parameter for each field in the class.
 
