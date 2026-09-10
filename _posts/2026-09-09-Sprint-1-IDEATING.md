@@ -31,3 +31,32 @@ i make
 # a dedicated chart with graphics of different users, their schools, their github and student ids, as well as name and join date. this chart will differentiate between students as well as guest accounts added through the mentors
 
 therefore i choose option b
+
+Design your POJO based on your data object
+
+    Identify all required fields (e.g., id, name, description, createdAt, updatedBy)
+    Choose appropriate data types (primitives, Strings, LocalDateTime, etc.)
+    Consider relationships (e.g., a Project belongs to a Team)
+
+
+required fields:
+id
+name
+createdAt
+email
+
+data types:
+localdatetime
+strings
+
+relationships:
+my project should tie into the admin panel and be a useful tool for administrators when dealing with account problems/reset passwords and similar.
+
+Lombok Annotations:
+
+https://dev.to/gianfcop98/10-lombok-annotations-every-java-developer-should-know-pcd
+
+review review review
+
+https://medium.com/javarevisited/all-the-16-lombok-annotations-explained-in-a-4-minute-article-926f71934ec6
+
