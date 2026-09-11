@@ -18,11 +18,11 @@ By the end of this assignment, you will:
  - Portfolio & Exam Preparation — Document your work in a blog that demonstrates OOP mastery and prepares you for AP CSA exam
 
 # DATA OBJECT DOMAIN MODEL
-what is my team per se
-my team is like
-backend
-we have admin panel
-what coudl be useful?
+what is my team per se <br/>
+my team is like<br/>
+backend<br/>
+we have admin panel<br/>
+what coudl be useful?<br/>
 
 i find things useful
 
@@ -100,7 +100,7 @@ The `@GeneratedValue` annnotation is used with the `@Id` annotation, and is used
 
 The `@Getter` and `@Setter` annotations are used to generate the default getter/setter, without needing to write them down
 
-A getter allows another part of the program to retrieve a private instance variable.
+A getter allows another part of the program to retrieve a private instance variable. <br/>
 For example in the following code:
 
 ```java
@@ -124,8 +124,40 @@ The output will be:
 Alexander Hamilton
 ```
 
-A setter modifies an object's instance variable.
+A setter modifies an object's instance variable. <br/>
+For example in the following code:
 
+```java
+public void setEmail(stringEmail) {
+    this.email = email;
+}
+```
+
+Interjecting the 
+```java
+user.setEmail("ishanjha100@gmail.com")
+```
+
+The state of the `user` object has now changed
+The keyword `this` refers to the object
+
+```java
+this.email = email;
+```
+
+In this example:
+ - `this.email = email;` is the instance variable
+ - `email` is the parameter in the method
+
+# Connection to APCSA
+
+Even if it is used in professional enviornments, **Lombok** is not used in the APCSA exam <br/>
+Therefore, I need to learn how to write the methods Lombok generates by myself.
+
+### Instance Variables
+My POJO contains these variables <br/>
+`private String name;` <br/>
+`private String email;` <br/>
 
 The `@NoArgsConstructor` creates a constructor with no paramaters, however if not possible then compiler error. On the other hand, `@AllArgsConstructor` ccreates a constructor with one parameter for each field in the class.
 
