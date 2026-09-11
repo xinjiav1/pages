@@ -209,3 +209,23 @@ public void setName(String name) {
 
 Lombok generates this through `@Setter`
 
+## Lombok vs CSA
+
+basically its like this:
+
+csa:
+I learn how and why these methods work <br/>
+                 | <br/>
+V <br/>
+Lombok&Spring boot: <br/>
+Getter<br/>
+Setter<br/>
+Constructor<br/>
+
+#### TL;DR
+Lombok removes repetitive code, **after** I know how it works
+
+# My Code
+![POJO Code](POJO.png)
+
+![bytecode](bytecode.png)
