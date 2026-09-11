@@ -98,6 +98,8 @@ The `@Id` annotation is part of the JPA library, it specifies the primary key of
 
 The `@GeneratedValue` annnotation is used with the `@Id` annotation, and is used to generate primary values for an entity
 
+The `@NoArgsConstructor` creates a constructor with no paramaters, however if not possible then compiler error. On the other hand, `@AllArgsConstructor` ccreates a constructor with one parameter for each field in the class.
+
 The `@Getter` and `@Setter` annotations are used to generate the default getter/setter, without needing to write them down
 
 A getter allows another part of the program to retrieve a private instance variable. <br/>
@@ -149,6 +151,8 @@ In this example:
  - `this.email = email;` is the instance variable
  - `email` is the parameter in the method
 
+
+
 # Connection to APCSA
 
 Even if it is used in professional enviornments, **Lombok** is not used in the APCSA exam <br/>
@@ -159,5 +163,4 @@ My POJO contains these variables <br/>
 `private String name;` <br/>
 `private String email;` <br/>
 
-The `@NoArgsConstructor` creates a constructor with no paramaters, however if not possible then compiler error. On the other hand, `@AllArgsConstructor` ccreates a constructor with one parameter for each field in the class.
 
