@@ -84,8 +84,8 @@ public class POJO {
     private String school;
     private String studentID;
     private String githubUsername;
-    private LocalDateTime createdAt;
     private String accountType;
+    private LocalDateTime createdAt;
 
 }
 ```
@@ -116,15 +116,15 @@ I can then write:
 ```java
 Admin user = new Admin();
 
-user.setName("Alexander Hamilton");
+user.setName("Ish Anjha");
 
 System.out.println(user.getName());
 ```
 
 The output will be:
 ```
-Alexander Hamilton
-```
+Ish Anjha
+ ```
 
 A setter modifies an object's instance variable. <br/>
 For example in the following code:
@@ -163,4 +163,49 @@ My POJO contains these variables <br/>
 `private String name;` <br/>
 `private String email;` <br/>
 
+These variables have the same class design used in APCSA <br/>
+Using the `private` variable helps show encapsulation, which is one of the core OOP pillars of java
+
+### Constructors
+
+In CSA, code I normally write code such as this
+```java
+public AdminUser(String name, String email) {
+    this.name = name;
+    this.email = email;
+}
+```
+
+Lombok automatically generates these annotations, 
+however I still need to know what a constructor is
+
+A constructor:
+ - Creates the initial state of an object
+ - recives values through parameters
+ - assigns those values to instance variables
+
+### Accessor Methods
+
+In CSA, getters are known as acessor methods, as they provide access to a state of object, without changing it.
+
+For example, 
+```java
+public String getName(){
+    return name;
+}
+```
+`@Getter` performs the same task
+
+### Mutator Methods
+
+Setters are known as mutator methods as they "mutate" (modify) the state of an object
+
+Example:
+```java
+public void setName(String name) {
+    this.name = name;
+}
+```
+
+Lombok generates this through `@Setter`
 
